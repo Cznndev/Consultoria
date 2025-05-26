@@ -16,6 +16,7 @@ import { Shield } from "lucide-react"
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null)
+  const [activeTab, setActiveTab] = useState("visao-geral")
   const router = useRouter()
 
   useEffect(() => {
@@ -32,6 +33,11 @@ export default function DashboardPage() {
       setUser(JSON.parse(userData))
     }
   }, [router])
+
+  // Função para navegar entre abas (será chamada pelo DashboardShell)
+  const handleTabChange = (tabValue: string) => {
+    setActiveTab(tabValue)
+  }
 
   if (!user) {
     return (
@@ -75,7 +81,7 @@ export default function DashboardPage() {
   const availableTabs = getAvailableTabs()
 
   return (
-    <DashboardShell>
+    <DashboardShell onTabChange={handleTabChange} activeTab={activeTab}>
       <DashboardHeader
         heading="Sistema de Gestão de TI - ET & WICCA"
         subheading={`Bem-vindo, ${user.name}! Gerencie todos os recursos de tecnologia da empresa em um só lugar.`}
@@ -93,7 +99,7 @@ export default function DashboardPage() {
         </AlertDescription>
       </Alert>
 
-      <Tabs defaultValue="visao-geral" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList
           className={`grid h-auto ${availableTabs.length <= 3 ? "grid-cols-3" : availableTabs.length <= 4 ? "grid-cols-4" : availableTabs.length <= 5 ? "grid-cols-5" : "grid-cols-6"}`}
         >
