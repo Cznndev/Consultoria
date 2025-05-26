@@ -1,214 +1,126 @@
 "use client"
-import dynamic from "next/dynamic"
-import { redirect } from "next/navigation"
 
-// Dynamically import the mermaid component to avoid SSR issues
-const Mermaid = dynamic(() => import("../components/mermaid"), { ssr: false })
+import type React from "react"
 
-export default function Home() {
-  redirect("/dashboard")
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Eye, EyeOff, Building2, Shield } from "lucide-react"
+import { useRouter } from "next/navigation"
+
+export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    // Simular autenticaç��o (em produção, isso seria uma chamada para API)
+    setTimeout(() => {
+      if (email && password) {
+        // Salvar token de autenticação no localStorage
+        localStorage.setItem("et-wicca-auth", "authenticated")
+        localStorage.setItem(
+          "et-wicca-user",
+          JSON.stringify({
+            name: "Usuário ET & WICCA",
+            email: email,
+            role: "admin",
+          }),
+        )
+        router.push("/dashboard")
+      }
+      setIsLoading(false)
+    }, 1000)
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1 text-center">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
+              <Building2 className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-primary">ET & WICCA</h1>
+              <p className="text-xs text-muted-foreground">Sistema de Gestão de TI</p>
+            </div>
+          </div>
+          <CardTitle className="text-xl">Acesso ao Sistema</CardTitle>
+          <CardDescription>
+            Entre com suas credenciais para acessar o sistema interno de gestão de tecnologia
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-mail</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="seu.email@etwicca.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Digite sua senha"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
+              </div>
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Entrando..." : "Entrar no Sistema"}
+            </Button>
+          </form>
+
+          <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <Shield className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium">Credenciais de Demonstração</span>
+            </div>
+            <div className="text-xs text-muted-foreground space-y-1">
+              <p>
+                <strong>Admin:</strong> admin@etwicca.com / admin123
+              </p>
+              <p>
+                <strong>TI:</strong> ti@etwicca.com / ti123
+              </p>
+              <p>
+                <strong>Gestor:</strong> gestor@etwicca.com / gestor123
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }
-
-// export default function ClassDiagramViewer() {
-//   const [zoom, setZoom] = useState(1)
-//   const [copied, setCopied] = useState(false)
-
-//   // Sample class diagram in mermaid syntax
-//   const ecommerceDiagram = `
-//     classDiagram
-//       class User {
-//         +String id
-//         +String name
-//         +String email
-//         +String password
-//         +register()
-//         +login()
-//         +updateProfile()
-//       }
-
-//       class Product {
-//         +String id
-//         +String name
-//         +String description
-//         +Number price
-//         +Number stock
-//         +getDetails()
-//         +updateStock()
-//       }
-
-//       class Order {
-//         +String id
-//         +Date orderDate
-//         +String status
-//         +Number totalAmount
-//         +processOrder()
-//         +cancelOrder()
-//         +getOrderDetails()
-//       }
-
-//       class OrderItem {
-//         +String id
-//         +Number quantity
-//         +Number price
-//         +calculateSubtotal()
-//       }
-
-//       class ShoppingCart {
-//         +String id
-//         +Number totalItems
-//         +Number totalAmount
-//         +addItem()
-//         +removeItem()
-//         +checkout()
-//       }
-
-//       User "1" -- "many" Order : places
-//       Order "1" *-- "many" OrderItem : contains
-//       OrderItem "many" -- "1" Product : references
-//       User "1" -- "1" ShoppingCart : has
-//       ShoppingCart "1" -- "many" Product : contains
-//   `
-
-//   const bankingDiagram = `
-//     classDiagram
-//       class Account {
-//         +String accountNumber
-//         +String accountType
-//         +Number balance
-//         +deposit()
-//         +withdraw()
-//         +getBalance()
-//       }
-
-//       class Customer {
-//         +String id
-//         +String name
-//         +String address
-//         +String phoneNumber
-//         +addAccount()
-//         +removeAccount()
-//         +updateProfile()
-//       }
-
-//       class Transaction {
-//         +String id
-//         +Date date
-//         +String type
-//         +Number amount
-//         +String description
-//         +processTransaction()
-//         +cancelTransaction()
-//       }
-
-//       class Bank {
-//         +String name
-//         +String branchCode
-//         +addCustomer()
-//         +removeCustomer()
-//         +generateReports()
-//       }
-
-//       class Loan {
-//         +String id
-//         +Number amount
-//         +Number interestRate
-//         +Date startDate
-//         +Date endDate
-//         +approve()
-//         +reject()
-//         +calculateInterest()
-//       }
-
-//       Customer "1" -- "many" Account : owns
-//       Account "1" -- "many" Transaction : has
-//       Bank "1" -- "many" Customer : serves
-//       Customer "1" -- "many" Loan : applies for
-//       Bank "1" -- "many" Loan : provides
-//   `
-
-//   const copyDiagram = (diagram) => {
-//     navigator.clipboard.writeText(diagram)
-//     setCopied(true)
-//     setTimeout(() => setCopied(false), 2000)
-//   }
-
-//   const downloadDiagram = () => {
-//     // This is a placeholder. In a real app, you would generate and download an image
-//     alert("Em uma aplicação real, isso baixaria o diagrama como uma imagem.")
-//   }
-
-//   return (
-//     <div className="container mx-auto py-8">
-//       <h1 className="text-3xl font-bold text-center mb-8">Visualizador de Diagrama de Classes</h1>
-
-//       <Tabs defaultValue="ecommerce" className="w-full">
-//         <div className="flex justify-between items-center mb-4">
-//           <TabsList>
-//             <TabsTrigger value="ecommerce">E-commerce</TabsTrigger>
-//             <TabsTrigger value="banking">Sistema Bancário</TabsTrigger>
-//           </TabsList>
-
-//           <div className="flex gap-2">
-//             <Button variant="outline" size="icon" onClick={() => setZoom((prev) => Math.max(0.5, prev - 0.1))}>
-//               <ZoomOut className="h-4 w-4" />
-//             </Button>
-//             <Button variant="outline" size="icon" onClick={() => setZoom((prev) => Math.min(2, prev + 0.1))}>
-//               <ZoomIn className="h-4 w-4" />
-//             </Button>
-//             <Button
-//               variant="outline"
-//               size="icon"
-//               onClick={() => copyDiagram(ecommerceDiagram)}
-//               className={copied ? "bg-green-100" : ""}
-//             >
-//               <Clipboard className="h-4 w-4" />
-//             </Button>
-//             <Button variant="outline" size="icon" onClick={downloadDiagram}>
-//               <Download className="h-4 w-4" />
-//             </Button>
-//           </div>
-//         </div>
-
-//         <Card>
-//           <CardHeader>
-//             <CardTitle>Diagrama de Classes</CardTitle>
-//             <CardDescription>Visualização da estrutura do sistema</CardDescription>
-//           </CardHeader>
-//           <CardContent>
-//             <div
-//               style={{ transform: `scale(${zoom})`, transformOrigin: "top left" }}
-//               className="transition-transform duration-200"
-//             >
-//               <TabsContent value="ecommerce" className="mt-0">
-//                 <Mermaid chart={ecommerceDiagram} />
-//               </TabsContent>
-//               <TabsContent value="banking" className="mt-0">
-//                 <Mermaid chart={bankingDiagram} />
-//               </TabsContent>
-//             </div>
-//           </CardContent>
-//         </Card>
-//       </Tabs>
-
-//       <Card className="mt-8">
-//         <CardHeader>
-//           <CardTitle>Sobre Diagramas de Classes</CardTitle>
-//         </CardHeader>
-//         <CardContent>
-//           <p className="text-muted-foreground">
-//             Os diagramas de classes são uma parte fundamental da modelagem orientada a objetos. Eles mostram a estrutura
-//             estática de um sistema, incluindo as classes, seus atributos, métodos e os relacionamentos entre as classes.
-//             São utilizados para:
-//           </p>
-//           <ul className="list-disc pl-5 mt-2 space-y-1 text-muted-foreground">
-//             <li>Visualizar as classes e relacionamentos em um sistema</li>
-//             <li>Modelar a estrutura de dados de aplicações</li>
-//             <li>Comunicar o design do sistema entre desenvolvedores</li>
-//             <li>Servir como base para a implementação do código</li>
-//             <li>Documentar a arquitetura do sistema</li>
-//           </ul>
-//         </CardContent>
-//       </Card>
-//     </div>
-//   )
-// }
