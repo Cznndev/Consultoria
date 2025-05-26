@@ -19,16 +19,44 @@ export function DashboardShell({ children }: DashboardShellProps) {
     }
   }, [])
 
-  const menuItems = [
-    { icon: BarChart3, label: "Dashboard", href: "/dashboard", active: true },
-    { icon: HardDrive, label: "Hardware", href: "/dashboard#hardware" },
-    { icon: FileText, label: "Software", href: "/dashboard#software" },
-    { icon: Network, label: "Rede", href: "/dashboard#rede" },
-    { icon: Database, label: "Banco de Dados", href: "/dashboard#banco-dados" },
-    { icon: Activity, label: "Monitoramento", href: "/dashboard#monitoramento" },
-    { icon: Users, label: "Usuários", href: "/dashboard#usuarios" },
-    { icon: Settings, label: "Configurações", href: "/dashboard#configuracoes" },
-  ]
+  // Definir itens do menu baseado no nível de acesso
+  const getMenuItems = () => {
+    const baseItems = [{ icon: BarChart3, label: "Dashboard", href: "/dashboard", active: true }]
+
+    if (!user) return baseItems
+
+    if (user.role === "admin") {
+      return [
+        ...baseItems,
+        { icon: HardDrive, label: "Hardware", href: "/dashboard#hardware" },
+        { icon: FileText, label: "Software", href: "/dashboard#software" },
+        { icon: Network, label: "Rede", href: "/dashboard#rede" },
+        { icon: Database, label: "Banco de Dados", href: "/dashboard#banco-dados" },
+        { icon: Activity, label: "Monitoramento", href: "/dashboard#monitoramento" },
+        { icon: Users, label: "Usuários", href: "/dashboard#usuarios" },
+        { icon: Settings, label: "Configurações", href: "/dashboard#configuracoes" },
+      ]
+    } else if (user.role === "ti") {
+      return [
+        ...baseItems,
+        { icon: HardDrive, label: "Hardware", href: "/dashboard#hardware" },
+        { icon: FileText, label: "Software", href: "/dashboard#software" },
+        { icon: Network, label: "Rede", href: "/dashboard#rede" },
+        { icon: Database, label: "Banco de Dados", href: "/dashboard#banco-dados" },
+        { icon: Activity, label: "Monitoramento", href: "/dashboard#monitoramento" },
+      ]
+    } else if (user.role === "gestor") {
+      return [
+        ...baseItems,
+        { icon: BarChart3, label: "Relatórios", href: "/dashboard#relatorios" },
+        { icon: Activity, label: "Status Geral", href: "/dashboard#status" },
+      ]
+    }
+
+    return baseItems
+  }
+
+  const menuItems = getMenuItems()
 
   return (
     <div className="flex-1 items-start md:grid md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -44,6 +72,18 @@ export function DashboardShell({ children }: DashboardShellProps) {
                   </Badge>
                 )}
               </div>
+
+              {/* Informação sobre nível de acesso */}
+              {user && (
+                <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded">
+                  <strong>Nível de Acesso:</strong>
+                  <br />
+                  {user.role === "admin" && "Acesso completo ao sistema"}
+                  {user.role === "ti" && "Acesso técnico e operacional"}
+                  {user.role === "gestor" && "Acesso a relatórios e visão geral"}
+                </div>
+              )}
+
               <div className="grid gap-1">
                 {menuItems.map((item, index) => {
                   const Icon = item.icon
