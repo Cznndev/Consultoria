@@ -18,9 +18,10 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Laptop, Printer, Server, Smartphone, Trash2, Edit, Plus, Search, Download, Filter } from "lucide-react"
+import { toast } from "@/components/ui/use-toast"
 
 // Dados de exemplo
-const hardwareData = [
+const initialHardwareData = [
   {
     id: 1,
     tipo: "Laptop",
@@ -66,39 +67,24 @@ const hardwareData = [
     departamento: "Diretoria",
     aquisicao: "12/04/2023",
   },
-  {
-    id: 6,
-    tipo: "Tablet",
-    modelo: "iPad Pro 12.9",
-    serial: "IPP129456",
-    status: "Inativo",
-    departamento: "Vendas",
-    aquisicao: "08/02/2023",
-  },
-  {
-    id: 7,
-    tipo: "Monitor",
-    modelo: "Dell UltraSharp 27",
-    serial: "US27654",
-    status: "Ativo",
-    departamento: "Design",
-    aquisicao: "17/05/2023",
-  },
-  {
-    id: 8,
-    tipo: "Laptop",
-    modelo: "MacBook Pro 16",
-    serial: "MBP16789",
-    status: "Ativo",
-    departamento: "Marketing",
-    aquisicao: "22/07/2023",
-  },
 ]
 
 export function HardwareTab() {
+  const [hardwareData, setHardwareData] = useState(initialHardwareData)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("todos")
   const [openDialog, setOpenDialog] = useState(false)
+  const [editingItem, setEditingItem] = useState(null)
+
+  // Estados do formulário
+  const [formData, setFormData] = useState({
+    tipo: "",
+    modelo: "",
+    serial: "",
+    departamento: "",
+    aquisicao: "",
+    status: "Ativo",
+  })
 
   // Filtrar dados com base na pesquisa e filtro
   const filteredData = hardwareData.filter((item) => {
@@ -112,10 +98,112 @@ export function HardwareTab() {
     return matchesSearch && matchesStatus
   })
 
+  // Função para resetar formulário
+  const resetForm = () => {
+    setFormData({
+      tipo: "",
+      modelo: "",
+      serial: "",
+      departamento: "",
+      aquisicao: "",
+      status: "Ativo",
+    })
+    setEditingItem(null)
+  }
+
+  // Função para abrir dialog de edição
+  const handleEdit = (item) => {
+    setEditingItem(item)
+    setFormData({
+      tipo: item.tipo,
+      modelo: item.modelo,
+      serial: item.serial,
+      departamento: item.departamento,
+      aquisicao: item.aquisicao,
+      status: item.status,
+    })
+    setOpenDialog(true)
+  }
+
+  // Função para deletar item
+  const handleDelete = (id) => {
+    setHardwareData(hardwareData.filter((item) => item.id !== id))
+    toast({
+      title: "Hardware removido",
+      description: "O equipamento foi removido com sucesso.",
+    })
+  }
+
+  // Função para salvar (adicionar ou editar)
+  const handleSave = () => {
+    if (!formData.tipo || !formData.modelo || !formData.serial) {
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha todos os campos obrigatórios.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (editingItem) {
+      // Editar item existente
+      setHardwareData(hardwareData.map((item) => (item.id === editingItem.id ? { ...item, ...formData } : item)))
+      toast({
+        title: "Hardware atualizado",
+        description: "As informações do equipamento foram atualizadas.",
+      })
+    } else {
+      // Adicionar novo item
+      const newItem = {
+        id: Math.max(...hardwareData.map((item) => item.id)) + 1,
+        ...formData,
+      }
+      setHardwareData([...hardwareData, newItem])
+      toast({
+        title: "Hardware adicionado",
+        description: "Novo equipamento foi adicionado com sucesso.",
+      })
+    }
+
+    setOpenDialog(false)
+    resetForm()
+  }
+
+  // Função para exportar dados
+  const handleExport = () => {
+    const csvContent = [
+      ["Tipo", "Modelo", "Serial", "Status", "Departamento", "Data Aquisição"],
+      ...filteredData.map((item) => [
+        item.tipo,
+        item.modelo,
+        item.serial,
+        item.status,
+        item.departamento,
+        item.aquisicao,
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n")
+
+    const blob = new Blob([csvContent], { type: "text/csv" })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "hardware-et-wicca.csv"
+    a.click()
+    window.URL.revokeObjectURL(url)
+
+    toast({
+      title: "Exportação concluída",
+      description: "Os dados foram exportados com sucesso.",
+    })
+  }
+
   // Função para renderizar o ícone com base no tipo
   const renderIcon = (tipo) => {
     switch (tipo.toLowerCase()) {
       case "laptop":
+      case "desktop":
         return <Laptop className="h-4 w-4" />
       case "servidor":
         return <Server className="h-4 w-4" />
@@ -159,8 +247,8 @@ export function HardwareTab() {
     <>
       <Card className="mb-4">
         <CardHeader>
-          <CardTitle>Gerenciamento de Hardware</CardTitle>
-          <CardDescription>Gerencie todos os equipamentos físicos da sua organização.</CardDescription>
+          <CardTitle>Gerenciamento de Hardware - ET & WICCA</CardTitle>
+          <CardDescription>Gerencie todos os equipamentos físicos da empresa.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row gap-4 mb-4">
@@ -187,7 +275,13 @@ export function HardwareTab() {
                   <SelectItem value="manutenção">Manutenção</SelectItem>
                 </SelectContent>
               </Select>
-              <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+              <Dialog
+                open={openDialog}
+                onOpenChange={(open) => {
+                  setOpenDialog(open)
+                  if (!open) resetForm()
+                }}
+              >
                 <DialogTrigger asChild>
                   <Button>
                     <Plus className="mr-2 h-4 w-4" />
@@ -196,58 +290,80 @@ export function HardwareTab() {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[500px]">
                   <DialogHeader>
-                    <DialogTitle>Adicionar Novo Hardware</DialogTitle>
-                    <DialogDescription>Preencha os detalhes do novo equipamento.</DialogDescription>
+                    <DialogTitle>{editingItem ? "Editar Hardware" : "Adicionar Novo Hardware"}</DialogTitle>
+                    <DialogDescription>
+                      {editingItem
+                        ? "Edite as informações do equipamento."
+                        : "Preencha os detalhes do novo equipamento."}
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="tipo" className="text-right">
-                        Tipo
+                        Tipo *
                       </Label>
-                      <Select>
+                      <Select
+                        value={formData.tipo}
+                        onValueChange={(value) => setFormData({ ...formData, tipo: value })}
+                      >
                         <SelectTrigger className="col-span-3">
                           <SelectValue placeholder="Selecione o tipo" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="laptop">Laptop</SelectItem>
-                          <SelectItem value="desktop">Desktop</SelectItem>
-                          <SelectItem value="servidor">Servidor</SelectItem>
-                          <SelectItem value="impressora">Impressora</SelectItem>
-                          <SelectItem value="smartphone">Smartphone</SelectItem>
-                          <SelectItem value="tablet">Tablet</SelectItem>
-                          <SelectItem value="monitor">Monitor</SelectItem>
-                          <SelectItem value="outro">Outro</SelectItem>
+                          <SelectItem value="Laptop">Laptop</SelectItem>
+                          <SelectItem value="Desktop">Desktop</SelectItem>
+                          <SelectItem value="Servidor">Servidor</SelectItem>
+                          <SelectItem value="Impressora">Impressora</SelectItem>
+                          <SelectItem value="Smartphone">Smartphone</SelectItem>
+                          <SelectItem value="Tablet">Tablet</SelectItem>
+                          <SelectItem value="Monitor">Monitor</SelectItem>
+                          <SelectItem value="Outro">Outro</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="modelo" className="text-right">
-                        Modelo
+                        Modelo *
                       </Label>
-                      <Input id="modelo" className="col-span-3" />
+                      <Input
+                        id="modelo"
+                        className="col-span-3"
+                        value={formData.modelo}
+                        onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
+                        placeholder="Ex: Dell XPS 15"
+                      />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="serial" className="text-right">
-                        Nº Serial
+                        Nº Serial *
                       </Label>
-                      <Input id="serial" className="col-span-3" />
+                      <Input
+                        id="serial"
+                        className="col-span-3"
+                        value={formData.serial}
+                        onChange={(e) => setFormData({ ...formData, serial: e.target.value })}
+                        placeholder="Ex: XPS159876"
+                      />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="departamento" className="text-right">
                         Departamento
                       </Label>
-                      <Select>
+                      <Select
+                        value={formData.departamento}
+                        onValueChange={(value) => setFormData({ ...formData, departamento: value })}
+                      >
                         <SelectTrigger className="col-span-3">
                           <SelectValue placeholder="Selecione o departamento" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="ti">TI</SelectItem>
-                          <SelectItem value="financeiro">Financeiro</SelectItem>
-                          <SelectItem value="rh">RH</SelectItem>
-                          <SelectItem value="vendas">Vendas</SelectItem>
-                          <SelectItem value="marketing">Marketing</SelectItem>
-                          <SelectItem value="design">Design</SelectItem>
-                          <SelectItem value="diretoria">Diretoria</SelectItem>
+                          <SelectItem value="TI">TI</SelectItem>
+                          <SelectItem value="Financeiro">Financeiro</SelectItem>
+                          <SelectItem value="RH">RH</SelectItem>
+                          <SelectItem value="Vendas">Vendas</SelectItem>
+                          <SelectItem value="Marketing">Marketing</SelectItem>
+                          <SelectItem value="Design">Design</SelectItem>
+                          <SelectItem value="Diretoria">Diretoria</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -255,15 +371,42 @@ export function HardwareTab() {
                       <Label htmlFor="aquisicao" className="text-right">
                         Data Aquisição
                       </Label>
-                      <Input id="aquisicao" type="date" className="col-span-3" />
+                      <Input
+                        id="aquisicao"
+                        type="date"
+                        className="col-span-3"
+                        value={formData.aquisicao}
+                        onChange={(e) => setFormData({ ...formData, aquisicao: e.target.value })}
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="status" className="text-right">
+                        Status
+                      </Label>
+                      <Select
+                        value={formData.status}
+                        onValueChange={(value) => setFormData({ ...formData, status: value })}
+                      >
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue placeholder="Selecione o status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Ativo">Ativo</SelectItem>
+                          <SelectItem value="Inativo">Inativo</SelectItem>
+                          <SelectItem value="Manutenção">Manutenção</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button type="submit">Salvar</Button>
+                    <Button variant="outline" onClick={() => setOpenDialog(false)}>
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleSave}>{editingItem ? "Atualizar" : "Salvar"}</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-              <Button variant="outline">
+              <Button variant="outline" onClick={handleExport}>
                 <Download className="mr-2 h-4 w-4" />
                 Exportar
               </Button>
@@ -299,10 +442,10 @@ export function HardwareTab() {
                     <TableCell>{item.aquisicao}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(item)}>
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
