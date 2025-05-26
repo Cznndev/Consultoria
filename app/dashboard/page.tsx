@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { DashboardHeader } from "@/components/dashboard/header"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { HardwareTab } from "@/components/tabs/hardware-tab"
 import { SoftwareTab } from "@/components/tabs/software-tab"
 import { RedeTab } from "@/components/tabs/rede-tab"
@@ -50,35 +49,52 @@ export default function DashboardPage() {
     )
   }
 
-  // Definir abas baseadas no nível de acesso
-  const getAvailableTabs = () => {
-    const baseTabs = [{ value: "visao-geral", label: "Visão Geral", component: <Overview /> }]
-
-    if (user.role === "admin") {
-      return [
-        ...baseTabs,
-        { value: "hardware", label: "Hardware", component: <HardwareTab /> },
-        { value: "software", label: "Software", component: <SoftwareTab /> },
-        { value: "rede", label: "Rede", component: <RedeTab /> },
-        { value: "banco-dados", label: "Banco de Dados", component: <BancoDadosTab /> },
-        { value: "relatorios", label: "Relatórios", component: <RelatoriosTab userRole="admin" /> },
-      ]
-    } else if (user.role === "ti") {
-      return [
-        ...baseTabs,
-        { value: "hardware", label: "Hardware", component: <HardwareTab /> },
-        { value: "software", label: "Software", component: <SoftwareTab /> },
-        { value: "rede", label: "Rede", component: <RedeTab /> },
-        { value: "banco-dados", label: "Banco de Dados", component: <BancoDadosTab /> },
-      ]
-    } else if (user.role === "gestor") {
-      return [...baseTabs, { value: "relatorios", label: "Relatórios", component: <RelatoriosTab userRole="gestor" /> }]
+  // Função para renderizar o conteúdo baseado na aba ativa
+  const renderActiveContent = () => {
+    switch (activeTab) {
+      case "visao-geral":
+        return <Overview />
+      case "hardware":
+        if (user.role === "admin" || user.role === "ti") {
+          return <HardwareTab />
+        }
+        return <AccessDenied />
+      case "software":
+        if (user.role === "admin" || user.role === "ti") {
+          return <SoftwareTab />
+        }
+        return <AccessDenied />
+      case "rede":
+        if (user.role === "admin" || user.role === "ti") {
+          return <RedeTab />
+        }
+        return <AccessDenied />
+      case "banco-dados":
+        if (user.role === "admin" || user.role === "ti") {
+          return <BancoDadosTab />
+        }
+        return <AccessDenied />
+      case "relatorios":
+        return <RelatoriosTab userRole={user.role} />
+      case "monitoramento":
+        if (user.role === "admin" || user.role === "ti") {
+          return <MonitoramentoTab />
+        }
+        return <AccessDenied />
+      case "usuarios":
+        if (user.role === "admin") {
+          return <UsuariosTab />
+        }
+        return <AccessDenied />
+      case "configuracoes":
+        if (user.role === "admin") {
+          return <ConfiguracoesTab />
+        }
+        return <AccessDenied />
+      default:
+        return <Overview />
     }
-
-    return baseTabs
   }
-
-  const availableTabs = getAvailableTabs()
 
   return (
     <DashboardShell onTabChange={handleTabChange} activeTab={activeTab}>
@@ -99,24 +115,29 @@ export default function DashboardPage() {
         </AlertDescription>
       </Alert>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList
-          className={`grid h-auto ${availableTabs.length <= 3 ? "grid-cols-3" : availableTabs.length <= 4 ? "grid-cols-4" : availableTabs.length <= 5 ? "grid-cols-5" : "grid-cols-6"}`}
-        >
-          {availableTabs.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value}>
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        {availableTabs.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value} className="space-y-4">
-            {tab.component}
-          </TabsContent>
-        ))}
-      </Tabs>
+      {/* Conteúdo da aba ativa */}
+      <div className="space-y-4">{renderActiveContent()}</div>
     </DashboardShell>
+  )
+}
+
+// Componente para acesso negado
+function AccessDenied() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Acesso Negado</CardTitle>
+        <CardDescription>Você não tem permissão para acessar esta seção.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <Shield className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">
+            Entre em contato com o administrador do sistema para solicitar acesso.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -162,6 +183,66 @@ function RelatoriosTab({ userRole }: { userRole: string }) {
               <CardDescription>{report.description}</CardDescription>
             </Card>
           ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// Componente placeholder para Monitoramento
+function MonitoramentoTab() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Monitoramento de Sistemas - ET & WICCA</CardTitle>
+        <CardDescription>Monitoramento em tempo real dos sistemas e infraestrutura.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <div className="text-muted-foreground">
+            <p>Seção de monitoramento em desenvolvimento.</p>
+            <p className="text-sm mt-2">Em breve: dashboards de performance, alertas e métricas em tempo real.</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// Componente placeholder para Usuários
+function UsuariosTab() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Gerenciamento de Usuários - ET & WICCA</CardTitle>
+        <CardDescription>Gerencie usuários, permissões e acessos do sistema.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <div className="text-muted-foreground">
+            <p>Seção de usuários em desenvolvimento.</p>
+            <p className="text-sm mt-2">Em breve: criação, edição e gerenciamento de usuários e permissões.</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// Componente placeholder para Configurações
+function ConfiguracoesTab() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Configurações do Sistema - ET & WICCA</CardTitle>
+        <CardDescription>Configure parâmetros gerais do sistema e preferências.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <div className="text-muted-foreground">
+            <p>Seção de configurações em desenvolvimento.</p>
+            <p className="text-sm mt-2">Em breve: configurações de sistema, backup, notificações e integrações.</p>
+          </div>
         </div>
       </CardContent>
     </Card>
