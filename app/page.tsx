@@ -68,9 +68,9 @@ export default function LoginPage() {
               <p className="text-xs text-muted-foreground">Sistema de Gestão de TI</p>
             </div>
           </div>
-          <CardTitle className="text-xl">Acesso ao Sistema</CardTitle>
+          <CardTitle className="text-xl">Acesso Restrito</CardTitle>
           <CardDescription>
-            Entre com suas credenciais para acessar o sistema interno de gestão de tecnologia
+            Entre com suas credenciais para acessar o sistema interno da empresa.
           </CardDescription>
         </CardHeader>
         <CardContent>
