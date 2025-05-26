@@ -146,14 +146,14 @@ export function DashboardShell({ children, onTabChange, activeTab }: DashboardSh
 
   return (
     <div className="flex-1 items-start md:grid md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <aside className="fixed top-0 z-30 -ml-2 hidden h-screen w-full shrink-0 overflow-y-auto border-r md:sticky md:block">
+      <aside className="fixed top-0 z-30 -ml-2 hidden h-screen w-full shrink-0 overflow-y-auto border-r border-blue-100 bg-white md:sticky md:block">
         <div className="h-full py-6 pl-8 pr-6 lg:px-8">
           <nav className="grid items-start gap-2">
             <div className="group flex flex-col gap-4 py-2">
               <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-primary">ET & WICCA TI</h2>
+                <h2 className="font-semibold text-blue-600">ET & WICCA TI</h2>
                 {user && (
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs border-blue-200 text-blue-700">
                     {user.role === "admin" ? "Admin" : user.role === "ti" ? "TI" : "Gestor"}
                   </Badge>
                 )}
@@ -161,7 +161,7 @@ export function DashboardShell({ children, onTabChange, activeTab }: DashboardSh
 
               {/* Informação sobre nível de acesso */}
               {user && (
-                <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded">
+                <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded border border-blue-100">
                   <strong>Nível de Acesso:</strong>
                   <br />
                   {user.role === "admin" && "Acesso completo ao sistema"}
@@ -177,8 +177,8 @@ export function DashboardShell({ children, onTabChange, activeTab }: DashboardSh
                     <button
                       key={index}
                       onClick={() => handleNavigation(item.value)}
-                      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted text-left w-full ${
-                        item.active ? "bg-muted text-primary" : ""
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-600 transition-all hover:text-blue-600 hover:bg-blue-50 text-left w-full ${
+                        item.active ? "bg-blue-50 text-blue-600 border border-blue-200" : ""
                       }`}
                     >
                       <Icon className="h-4 w-4" />
@@ -188,23 +188,23 @@ export function DashboardShell({ children, onTabChange, activeTab }: DashboardSh
                 })}
               </div>
 
-              <div className="mt-6 p-3 bg-muted/50 rounded-lg">
-                <h3 className="text-sm font-medium mb-2">Status do Sistema</h3>
+              <div className="mt-6 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <h3 className="text-sm font-medium mb-2 text-blue-800">Status do Sistema</h3>
                 <div className="space-y-2 text-xs">
                   <div className="flex items-center justify-between">
-                    <span>Servidores</span>
+                    <span className="text-blue-700">Servidores</span>
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
                       Online
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span>Rede</span>
+                    <span className="text-blue-700">Rede</span>
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
                       Estável
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span>Backup</span>
+                    <span className="text-blue-700">Backup</span>
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
                       OK
                     </Badge>
@@ -215,7 +215,7 @@ export function DashboardShell({ children, onTabChange, activeTab }: DashboardSh
           </nav>
         </div>
       </aside>
-      <main className="flex w-full flex-col overflow-hidden p-4 md:p-6">{children}</main>
+      <main className="flex w-full flex-col overflow-hidden p-4 md:p-6 bg-gray-50">{children}</main>
     </div>
   )
 }
