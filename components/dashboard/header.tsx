@@ -39,15 +39,15 @@ export function DashboardHeader({ heading, subheading, children }: DashboardHead
   }
 
   return (
-    <div className="flex items-center justify-between px-2 pb-4 border-b">
+    <div className="flex items-center justify-between px-2 pb-4 border-b border-blue-100">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-            <Building2 className="h-5 w-5 text-primary-foreground" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
+            <Building2 className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-2xl md:text-3xl text-primary">ET & WICCA</h1>
-            <p className="text-xs text-muted-foreground">Sistema de Gestão de TI</p>
+            <h1 className="font-bold text-2xl md:text-3xl text-blue-600">ET & WICCA</h1>
+            <p className="text-xs text-blue-500">Sistema de Gestão de TI</p>
           </div>
         </div>
       </div>
@@ -59,9 +59,7 @@ export function DashboardHeader({ heading, subheading, children }: DashboardHead
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    {user.name?.charAt(0) || "U"}
-                  </AvatarFallback>
+                  <AvatarFallback className="bg-blue-600 text-white">{user.name?.charAt(0) || "U"}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
