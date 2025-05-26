@@ -21,17 +21,32 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    // Simular autenticaç��o (em produção, isso seria uma chamada para API)
+    // Simular autenticação (em produção, isso seria uma chamada para API)
     setTimeout(() => {
       if (email && password) {
+        // Definir role baseado no email/senha
+        let role = "gestor"
+        let name = "Usuário ET & WICCA"
+
+        if (email === "admin@etwicca.com" && password === "admin123") {
+          role = "admin"
+          name = "Administrador ET & WICCA"
+        } else if (email === "ti@etwicca.com" && password === "ti123") {
+          role = "ti"
+          name = "Técnico TI ET & WICCA"
+        } else if (email === "gestor@etwicca.com" && password === "gestor123") {
+          role = "gestor"
+          name = "Gestor ET & WICCA"
+        }
+
         // Salvar token de autenticação no localStorage
         localStorage.setItem("et-wicca-auth", "authenticated")
         localStorage.setItem(
           "et-wicca-user",
           JSON.stringify({
-            name: "Usuário ET & WICCA",
+            name: name,
             email: email,
-            role: "admin",
+            role: role,
           }),
         )
         router.push("/dashboard")
