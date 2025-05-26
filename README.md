@@ -1,5 +1,5 @@
 
-# 📊 Class Diagram Viewer
+# 📊 Gestão De Tecnologia
 
 Um visualizador interativo de diagramas de classe, desenvolvido com **Next.js**, **React**, **TypeScript** e estilizado com **TailwindCSS**. Este projeto permite visualizar e interagir com diagramas representando diferentes componentes de sistemas, como hardware, software, banco de dados e redes.
 
