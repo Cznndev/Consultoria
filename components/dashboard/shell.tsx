@@ -7,9 +7,11 @@ import { Activity, Database, HardDrive, Network, BarChart3, FileText, Users, Set
 
 interface DashboardShellProps {
   children: React.ReactNode
+  onTabChange?: (tabValue: string) => void
+  activeTab?: string
 }
 
-export function DashboardShell({ children }: DashboardShellProps) {
+export function DashboardShell({ children, onTabChange, activeTab }: DashboardShellProps) {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
@@ -21,35 +23,112 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   // Definir itens do menu baseado no nível de acesso
   const getMenuItems = () => {
-    const baseItems = [{ icon: BarChart3, label: "Dashboard", href: "#visao-geral", active: true }]
+    const baseItems = [
+      {
+        icon: BarChart3,
+        label: "Dashboard",
+        value: "visao-geral",
+        active: activeTab === "visao-geral",
+      },
+    ]
 
     if (!user) return baseItems
 
     if (user.role === "admin") {
       return [
         ...baseItems,
-        { icon: HardDrive, label: "Hardware", href: "#hardware" },
-        { icon: FileText, label: "Software", href: "#software" },
-        { icon: Network, label: "Rede", href: "#rede" },
-        { icon: Database, label: "Banco de Dados", href: "#banco-dados" },
-        { icon: Activity, label: "Monitoramento", href: "#monitoramento" },
-        { icon: Users, label: "Usuários", href: "#usuarios" },
-        { icon: Settings, label: "Configurações", href: "#configuracoes" },
+        {
+          icon: HardDrive,
+          label: "Hardware",
+          value: "hardware",
+          active: activeTab === "hardware",
+        },
+        {
+          icon: FileText,
+          label: "Software",
+          value: "software",
+          active: activeTab === "software",
+        },
+        {
+          icon: Network,
+          label: "Rede",
+          value: "rede",
+          active: activeTab === "rede",
+        },
+        {
+          icon: Database,
+          label: "Banco de Dados",
+          value: "banco-dados",
+          active: activeTab === "banco-dados",
+        },
+        {
+          icon: Activity,
+          label: "Monitoramento",
+          value: "monitoramento",
+          active: activeTab === "monitoramento",
+        },
+        {
+          icon: Users,
+          label: "Usuários",
+          value: "usuarios",
+          active: activeTab === "usuarios",
+        },
+        {
+          icon: Settings,
+          label: "Configurações",
+          value: "configuracoes",
+          active: activeTab === "configuracoes",
+        },
       ]
     } else if (user.role === "ti") {
       return [
         ...baseItems,
-        { icon: HardDrive, label: "Hardware", href: "#hardware" },
-        { icon: FileText, label: "Software", href: "#software" },
-        { icon: Network, label: "Rede", href: "#rede" },
-        { icon: Database, label: "Banco de Dados", href: "#banco-dados" },
-        { icon: Activity, label: "Monitoramento", href: "#monitoramento" },
+        {
+          icon: HardDrive,
+          label: "Hardware",
+          value: "hardware",
+          active: activeTab === "hardware",
+        },
+        {
+          icon: FileText,
+          label: "Software",
+          value: "software",
+          active: activeTab === "software",
+        },
+        {
+          icon: Network,
+          label: "Rede",
+          value: "rede",
+          active: activeTab === "rede",
+        },
+        {
+          icon: Database,
+          label: "Banco de Dados",
+          value: "banco-dados",
+          active: activeTab === "banco-dados",
+        },
+        {
+          icon: Activity,
+          label: "Monitoramento",
+          value: "monitoramento",
+          active: activeTab === "monitoramento",
+        },
       ]
     } else if (user.role === "gestor") {
       return [
         ...baseItems,
-        { icon: BarChart3, label: "Relatórios", href: "#relatorios" },
-        { icon: Activity, label: "Status Geral", href: "#status" },
+        {
+          icon: BarChart3,
+          label: "Relatórios",
+          value: "relatorios",
+          active: activeTab === "relatorios",
+        },
+        {
+          icon: Activity,
+          label: "Status Geral",
+          value: "status",
+          active: activeTab === "status",
+        },
       ]
     }
 
@@ -59,13 +138,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const menuItems = getMenuItems()
 
   // Função para navegar entre as abas
-  const handleNavigation = (href: string) => {
-    const tabValue = href.replace("#", "")
-
-    // Encontrar o botão da aba e clicar nele
-    const tabButton = document.querySelector(`[value="${tabValue}"]`) as HTMLButtonElement
-    if (tabButton) {
-      tabButton.click()
+  const handleNavigation = (tabValue: string) => {
+    if (onTabChange) {
+      onTabChange(tabValue)
     }
   }
 
@@ -101,7 +176,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                   return (
                     <button
                       key={index}
-                      onClick={() => handleNavigation(item.href)}
+                      onClick={() => handleNavigation(item.value)}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted text-left w-full ${
                         item.active ? "bg-muted text-primary" : ""
                       }`}
