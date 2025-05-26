@@ -7,9 +7,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Sistema de Gestão de TI",
-  description: "Gerencie recursos de tecnologia da sua empresa",
-    generator: 'v0.dev'
+  title: "ET & WICCA - Sistema de Gestão de TI",
+  description: "Sistema interno de gestão de tecnologia da ET & WICCA",
 }
 
 export default function RootLayout({
