@@ -3,7 +3,17 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Activity, AlertTriangle, CheckCircle, Clock, HardDrive, Laptop, Server, Smartphone } from "lucide-react"
+import {
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  HardDrive,
+  Laptop,
+  Server,
+  Smartphone,
+  Building2,
+} from "lucide-react"
 
 const data = [
   {
@@ -78,7 +88,7 @@ export function Overview() {
 
       <Card className="col-span-full">
         <CardHeader>
-          <CardTitle>Aquisições Mensais</CardTitle>
+          <CardTitle>Aquisições Mensais - ET & WICCA</CardTitle>
           <CardDescription>Número de novos equipamentos adquiridos nos últimos 6 meses.</CardDescription>
         </CardHeader>
         <CardContent className="pl-2">
@@ -100,7 +110,7 @@ export function Overview() {
 
       <Card className="md:col-span-2">
         <CardHeader>
-          <CardTitle>Alertas Recentes</CardTitle>
+          <CardTitle>Alertas Recentes - Sistema ET & WICCA</CardTitle>
           <CardDescription>Últimos alertas do sistema de monitoramento.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -149,8 +159,8 @@ export function Overview() {
 
       <Card className="md:col-span-2">
         <CardHeader>
-          <CardTitle>Distribuição de Hardware</CardTitle>
-          <CardDescription>Tipos de dispositivos no inventário.</CardDescription>
+          <CardTitle>Distribuição de Hardware - ET & WICCA</CardTitle>
+          <CardDescription>Tipos de dispositivos no inventário da empresa.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
@@ -170,7 +180,7 @@ export function Overview() {
               <p className="text-xs text-muted-foreground">Dispositivos Móveis</p>
             </div>
             <div className="flex flex-col items-center justify-center gap-1 rounded-lg border p-3">
-              <HardDrive className="h-8 w-8 text-primary" />
+              <Building2 className="h-8 w-8 text-primary" />
               <h3 className="text-xl font-bold">12</h3>
               <p className="text-xs text-muted-foreground">Outros</p>
             </div>
