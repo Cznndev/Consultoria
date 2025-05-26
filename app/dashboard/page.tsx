@@ -11,6 +11,8 @@ import { SoftwareTab } from "@/components/tabs/software-tab"
 import { RedeTab } from "@/components/tabs/rede-tab"
 import { BancoDadosTab } from "@/components/tabs/banco-dados-tab"
 import { Overview } from "@/components/dashboard/overview"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Shield } from "lucide-react"
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null)
@@ -42,81 +44,120 @@ export default function DashboardPage() {
     )
   }
 
+  // Definir abas baseadas no nível de acesso
+  const getAvailableTabs = () => {
+    const baseTabs = [{ value: "visao-geral", label: "Visão Geral", component: <Overview /> }]
+
+    if (user.role === "admin") {
+      return [
+        ...baseTabs,
+        { value: "hardware", label: "Hardware", component: <HardwareTab /> },
+        { value: "software", label: "Software", component: <SoftwareTab /> },
+        { value: "rede", label: "Rede", component: <RedeTab /> },
+        { value: "banco-dados", label: "Banco de Dados", component: <BancoDadosTab /> },
+        { value: "relatorios", label: "Relatórios", component: <RelatoriosTab userRole="admin" /> },
+      ]
+    } else if (user.role === "ti") {
+      return [
+        ...baseTabs,
+        { value: "hardware", label: "Hardware", component: <HardwareTab /> },
+        { value: "software", label: "Software", component: <SoftwareTab /> },
+        { value: "rede", label: "Rede", component: <RedeTab /> },
+        { value: "banco-dados", label: "Banco de Dados", component: <BancoDadosTab /> },
+      ]
+    } else if (user.role === "gestor") {
+      return [...baseTabs, { value: "relatorios", label: "Relatórios", component: <RelatoriosTab userRole="gestor" /> }]
+    }
+
+    return baseTabs
+  }
+
+  const availableTabs = getAvailableTabs()
+
   return (
     <DashboardShell>
       <DashboardHeader
         heading="Sistema de Gestão de TI - ET & WICCA"
         subheading={`Bem-vindo, ${user.name}! Gerencie todos os recursos de tecnologia da empresa em um só lugar.`}
       />
+
+      {/* Alerta de nível de acesso */}
+      <Alert className="mb-4">
+        <Shield className="h-4 w-4" />
+        <AlertDescription>
+          Você está logado como{" "}
+          <strong>{user.role === "admin" ? "Administrador" : user.role === "ti" ? "Técnico de TI" : "Gestor"}</strong>.
+          {user.role === "gestor" && " Você tem acesso apenas à visão geral e relatórios."}
+          {user.role === "ti" && " Você tem acesso a hardware, software, rede e banco de dados."}
+          {user.role === "admin" && " Você tem acesso completo ao sistema."}
+        </AlertDescription>
+      </Alert>
+
       <Tabs defaultValue="visao-geral" className="space-y-4">
-        <TabsList className="grid grid-cols-6 h-auto">
-          <TabsTrigger value="visao-geral">Visão Geral</TabsTrigger>
-          <TabsTrigger value="hardware">Hardware</TabsTrigger>
-          <TabsTrigger value="software">Software</TabsTrigger>
-          <TabsTrigger value="rede">Rede</TabsTrigger>
-          <TabsTrigger value="banco-dados">Banco de Dados</TabsTrigger>
-          <TabsTrigger value="relatorios">Relatórios</TabsTrigger>
+        <TabsList
+          className={`grid h-auto ${availableTabs.length <= 3 ? "grid-cols-3" : availableTabs.length <= 4 ? "grid-cols-4" : availableTabs.length <= 5 ? "grid-cols-5" : "grid-cols-6"}`}
+        >
+          {availableTabs.map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value="visao-geral" className="space-y-4">
-          <Overview />
-        </TabsContent>
-
-        <TabsContent value="hardware" className="space-y-4">
-          <HardwareTab />
-        </TabsContent>
-
-        <TabsContent value="software" className="space-y-4">
-          <SoftwareTab />
-        </TabsContent>
-
-        <TabsContent value="rede" className="space-y-4">
-          <RedeTab />
-        </TabsContent>
-
-        <TabsContent value="banco-dados" className="space-y-4">
-          <BancoDadosTab />
-        </TabsContent>
-
-        <TabsContent value="relatorios" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Relatórios ET & WICCA</CardTitle>
-              <CardDescription>
-                Visualize relatórios detalhados sobre os recursos de tecnologia da empresa.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <Card className="p-4 border-dashed border-2 cursor-pointer hover:bg-muted/50">
-                  <CardTitle className="text-base">Inventário Completo</CardTitle>
-                  <CardDescription>Relatório de todos os ativos de TI da ET & WICCA</CardDescription>
-                </Card>
-                <Card className="p-4 border-dashed border-2 cursor-pointer hover:bg-muted/50">
-                  <CardTitle className="text-base">Licenças a Vencer</CardTitle>
-                  <CardDescription>Licenças que vencem nos próximos 30 dias</CardDescription>
-                </Card>
-                <Card className="p-4 border-dashed border-2 cursor-pointer hover:bg-muted/50">
-                  <CardTitle className="text-base">Manutenções Programadas</CardTitle>
-                  <CardDescription>Calendário de manutenções futuras</CardDescription>
-                </Card>
-                <Card className="p-4 border-dashed border-2 cursor-pointer hover:bg-muted/50">
-                  <CardTitle className="text-base">Custos de TI</CardTitle>
-                  <CardDescription>Análise de custos mensais e anuais</CardDescription>
-                </Card>
-                <Card className="p-4 border-dashed border-2 cursor-pointer hover:bg-muted/50">
-                  <CardTitle className="text-base">Performance da Rede</CardTitle>
-                  <CardDescription>Relatório de performance e disponibilidade</CardDescription>
-                </Card>
-                <Card className="p-4 border-dashed border-2 cursor-pointer hover:bg-muted/50">
-                  <CardTitle className="text-base">Backup e Segurança</CardTitle>
-                  <CardDescription>Status de backups e segurança dos dados</CardDescription>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+        {availableTabs.map((tab) => (
+          <TabsContent key={tab.value} value={tab.value} className="space-y-4">
+            {tab.component}
+          </TabsContent>
+        ))}
       </Tabs>
     </DashboardShell>
+  )
+}
+
+// Componente de Relatórios com controle de acesso
+function RelatoriosTab({ userRole }: { userRole: string }) {
+  const adminReports = [
+    { title: "Inventário Completo", description: "Relatório de todos os ativos de TI da ET & WICCA" },
+    { title: "Licenças a Vencer", description: "Licenças que vencem nos próximos 30 dias" },
+    { title: "Manutenções Programadas", description: "Calendário de manutenções futuras" },
+    { title: "Custos de TI", description: "Análise de custos mensais e anuais" },
+    { title: "Performance da Rede", description: "Relatório de performance e disponibilidade" },
+    { title: "Backup e Segurança", description: "Status de backups e segurança dos dados" },
+    { title: "Usuários do Sistema", description: "Relatório de usuários e permissões" },
+    { title: "Logs de Auditoria", description: "Histórico de ações no sistema" },
+    { title: "Análise de Vulnerabilidades", description: "Relatório de segurança e vulnerabilidades" },
+  ]
+
+  const gestorReports = [
+    { title: "Resumo Executivo", description: "Visão geral dos recursos de TI para gestão" },
+    { title: "Custos de TI", description: "Análise de custos mensais e anuais" },
+    { title: "Indicadores de Performance", description: "KPIs e métricas de TI" },
+    { title: "Status Geral dos Sistemas", description: "Disponibilidade e status dos sistemas" },
+    { title: "Planejamento de Orçamento", description: "Projeções e planejamento financeiro" },
+  ]
+
+  const reports = userRole === "admin" ? adminReports : gestorReports
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Relatórios ET & WICCA - {userRole === "admin" ? "Administrador" : "Gestor"}</CardTitle>
+        <CardDescription>
+          {userRole === "admin"
+            ? "Acesso completo a todos os relatórios técnicos e administrativos."
+            : "Relatórios executivos e de gestão para tomada de decisões estratégicas."}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {reports.map((report, index) => (
+            <Card key={index} className="p-4 border-dashed border-2 cursor-pointer hover:bg-muted/50">
+              <CardTitle className="text-base">{report.title}</CardTitle>
+              <CardDescription>{report.description}</CardDescription>
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   )
 }
