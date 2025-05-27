@@ -56,7 +56,7 @@ export default function DashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p>Carregando...</p>
         </div>
       </div>
@@ -118,9 +118,9 @@ export default function DashboardPage() {
       />
 
       {/* Alerta de nível de acesso */}
-      <Alert className="mb-4">
-        <Shield className="h-4 w-4" />
-        <AlertDescription>
+      <Alert className="mb-4 border-blue-200 bg-blue-50">
+        <Shield className="h-4 w-4 text-blue-600" />
+        <AlertDescription className="text-blue-800">
           Você está logado como{" "}
           <strong>{user.role === "admin" ? "Administrador" : user.role === "ti" ? "Técnico de TI" : "Gestor"}</strong>.
           {user.role === "gestor" && " Você tem acesso apenas à visão geral e relatórios."}
@@ -138,14 +138,14 @@ export default function DashboardPage() {
 // Componente para acesso negado
 function AccessDenied() {
   return (
-    <Card>
+    <Card className="border-blue-200">
       <CardHeader>
-        <CardTitle>Acesso Negado</CardTitle>
+        <CardTitle className="text-blue-800">Acesso Negado</CardTitle>
         <CardDescription>Você não tem permissão para acessar esta seção.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="text-center py-8">
-          <Shield className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <Shield className="h-16 w-16 text-blue-400 mx-auto mb-4" />
           <p className="text-muted-foreground">
             Entre em contato com o administrador do sistema para solicitar acesso.
           </p>
@@ -180,9 +180,11 @@ function RelatoriosTab({ userRole }: { userRole: string }) {
   const reports = userRole === "admin" ? adminReports : gestorReports
 
   return (
-    <Card>
+    <Card className="border-blue-200">
       <CardHeader>
-        <CardTitle>Relatórios ET & WICCA - {userRole === "admin" ? "Administrador" : "Gestor"}</CardTitle>
+        <CardTitle className="text-blue-800">
+          Relatórios ET & WICCA - {userRole === "admin" ? "Administrador" : "Gestor"}
+        </CardTitle>
         <CardDescription>
           {userRole === "admin"
             ? "Acesso completo a todos os relatórios técnicos e administrativos."
@@ -192,8 +194,11 @@ function RelatoriosTab({ userRole }: { userRole: string }) {
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {reports.map((report, index) => (
-            <Card key={index} className="p-4 border-dashed border-2 cursor-pointer hover:bg-muted/50">
-              <CardTitle className="text-base">{report.title}</CardTitle>
+            <Card
+              key={index}
+              className="p-4 border-dashed border-2 border-blue-200 cursor-pointer hover:bg-blue-50 hover:border-blue-300"
+            >
+              <CardTitle className="text-base text-blue-700">{report.title}</CardTitle>
               <CardDescription>{report.description}</CardDescription>
             </Card>
           ))}
@@ -203,7 +208,7 @@ function RelatoriosTab({ userRole }: { userRole: string }) {
   )
 }
 
-// Componente completo para Monitoramento
+// Componente completo para Monitoramento com paleta azul ET & WICCA
 function MonitoramentoTab() {
   const [metrics, setMetrics] = useState({
     cpu: 0,
@@ -282,7 +287,7 @@ function MonitoramentoTab() {
   const getStatusColor = (status) => {
     switch (status) {
       case "online":
-        return "bg-blue-500"
+        return "bg-blue-500" // Mudança: azul ao invés de verde
       case "warning":
         return "bg-amber-500"
       case "offline":
@@ -305,104 +310,103 @@ function MonitoramentoTab() {
     }
   }
 
+  // Função para obter cor da barra de progresso baseada no uso (paleta azul)
+  const getProgressBarColor = (value, type = "default") => {
+    if (type === "cpu" || type === "memory") {
+      if (value > 80) return "bg-blue-800" // Azul escuro para alto uso
+      if (value > 60) return "bg-blue-600" // Azul médio para uso moderado
+      return "bg-blue-400" // Azul claro para uso normal
+    }
+    return "bg-blue-500" // Azul padrão
+  }
+
   return (
     <div className="space-y-6">
-      {/* Métricas Principais */}
+      {/* Métricas Principais com paleta azul */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="border-blue-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">CPU</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-blue-800">CPU</CardTitle>
+            <Activity className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.cpu.toFixed(1)}%</div>
+            <div className="text-2xl font-bold text-blue-700">{metrics.cpu.toFixed(1)}%</div>
             <div className="mt-2">
-              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+              <div className="h-2 w-full rounded-full bg-blue-100 overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-500 ${
-                    metrics.cpu > 80 ? "bg-blue-800" : metrics.cpu > 60 ? "bg-blue-600" : "bg-blue-400"
-                  }`}
+                  className={`h-full transition-all duration-500 ${getProgressBarColor(metrics.cpu, "cpu")}`}
                   style={{ width: `${metrics.cpu}%` }}
                 />
               </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-blue-600 mt-1">
               {metrics.cpu > 80 ? "Alto uso" : metrics.cpu > 60 ? "Uso moderado" : "Uso normal"}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-blue-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Memória</CardTitle>
-            <HardDrive className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-blue-800">Memória</CardTitle>
+            <HardDrive className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.memory.toFixed(1)}%</div>
+            <div className="text-2xl font-bold text-blue-700">{metrics.memory.toFixed(1)}%</div>
             <div className="mt-2">
-              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+              <div className="h-2 w-full rounded-full bg-blue-100 overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-500 ${
-                    metrics.memory > 85 ? "bg-blue-800" : metrics.memory > 70 ? "bg-blue-600" : "bg-blue-400"
-                  }`}
+                  className={`h-full transition-all duration-500 ${getProgressBarColor(metrics.memory, "memory")}`}
                   style={{ width: `${metrics.memory}%` }}
                 />
               </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">{((metrics.memory * 32) / 100).toFixed(1)} GB / 32 GB</p>
+            <p className="text-xs text-blue-600 mt-1">{((metrics.memory * 32) / 100).toFixed(1)} GB / 32 GB</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-blue-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Disco</CardTitle>
-            <Database className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-blue-800">Disco</CardTitle>
+            <Database className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.disk.toFixed(1)}%</div>
+            <div className="text-2xl font-bold text-blue-700">{metrics.disk.toFixed(1)}%</div>
             <div className="mt-2">
-              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-                <div
-                  className={`h-full transition-all duration-500 ${
-                    metrics.disk > 90 ? "bg-blue-800" : metrics.disk > 75 ? "bg-blue-600" : "bg-blue-400"
-                  }`}
-                  style={{ width: `${metrics.disk}%` }}
-                />
+              <div className="h-2 w-full rounded-full bg-blue-100 overflow-hidden">
+                <div className="h-full bg-blue-500 transition-all duration-500" style={{ width: `${metrics.disk}%` }} />
               </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">{((metrics.disk * 2) / 100).toFixed(1)} TB / 2 TB</p>
+            <p className="text-xs text-blue-600 mt-1">{((metrics.disk * 2) / 100).toFixed(1)} TB / 2 TB</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-blue-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Rede</CardTitle>
-            <Network className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-blue-800">Rede</CardTitle>
+            <Network className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.network.toFixed(1)}%</div>
+            <div className="text-2xl font-bold text-blue-700">{metrics.network.toFixed(1)}%</div>
             <div className="mt-2">
-              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+              <div className="h-2 w-full rounded-full bg-blue-100 overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-500 bg-blue-400`}
+                  className="h-full bg-blue-400 transition-all duration-500"
                   style={{ width: `${metrics.network}%` }}
                 />
               </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {((metrics.network * 1000) / 100).toFixed(0)} Mbps / 1 Gbps
-            </p>
+            <p className="text-xs text-blue-600 mt-1">{((metrics.network * 1000) / 100).toFixed(0)} Mbps / 1 Gbps</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Métricas Secundárias */}
+      {/* Métricas Secundárias com paleta azul */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="border-blue-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium">Uptime</p>
+                <p className="text-sm font-medium text-blue-800">Uptime</p>
                 <p className="text-2xl font-bold text-blue-600">{metrics.uptime}</p>
               </div>
               <TrendingUp className="h-8 w-8 text-blue-500" />
@@ -410,65 +414,69 @@ function MonitoramentoTab() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-blue-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium">Usuários Ativos</p>
-                <p className="text-2xl font-bold text-blue-500">{metrics.activeUsers}</p>
+                <p className="text-sm font-medium text-blue-800">Usuários Ativos</p>
+                <p className="text-2xl font-bold text-blue-600">{metrics.activeUsers}</p>
               </div>
               <Users className="h-8 w-8 text-blue-500" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-blue-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium">Load Average</p>
-                <p className="text-2xl font-bold text-blue-700">{metrics.systemLoad.toFixed(2)}</p>
+                <p className="text-sm font-medium text-blue-800">Load Average</p>
+                <p className="text-2xl font-bold text-blue-600">{metrics.systemLoad.toFixed(2)}</p>
               </div>
-              <BarChart3 className="h-8 w-8 text-purple-500" />
+              <BarChart3 className="h-8 w-8 text-blue-500" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-blue-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium">Temperatura</p>
-                <p className="text-2xl font-bold text-blue-800">{metrics.temperature.toFixed(0)}°C</p>
+                <p className="text-sm font-medium text-blue-800">Temperatura</p>
+                <p className="text-2xl font-bold text-blue-600">{metrics.temperature.toFixed(0)}°C</p>
               </div>
-              <Thermometer className="h-8 w-8 text-orange-500" />
+              <Thermometer className="h-8 w-8 text-blue-500" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Gráfico de Performance em Tempo Real */}
-      <Card>
+      {/* Gráfico de Performance em Tempo Real com gradiente azul */}
+      <Card className="border-blue-200">
         <CardHeader>
-          <CardTitle>Performance em Tempo Real</CardTitle>
+          <CardTitle className="text-blue-800">Performance em Tempo Real</CardTitle>
           <CardDescription>Monitoramento contínuo dos recursos do sistema</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64 w-full">
             <div className="flex h-full items-end justify-between gap-1">
-              {Array.from({ length: 50 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-blue-600 rounded-t transition-all duration-300"
-                  style={{
-                    height: `${Math.max(10, Math.random() * 100)}%`,
-                    width: "2%",
-                  }}
-                />
-              ))}
+              {Array.from({ length: 50 }).map((_, i) => {
+                const height = Math.max(10, Math.random() * 100)
+                return (
+                  <div
+                    key={i}
+                    className="rounded-t transition-all duration-300 hover:opacity-80"
+                    style={{
+                      height: `${height}%`,
+                      width: "2%",
+                      background: `linear-gradient(to top, #2563eb ${height > 70 ? "100%" : "0%"}, #3b82f6 ${height > 40 ? "100%" : "0%"}, #60a5fa 100%)`,
+                    }}
+                  />
+                )
+              })}
             </div>
           </div>
-          <div className="mt-4 flex justify-between text-xs text-muted-foreground">
+          <div className="mt-4 flex justify-between text-xs text-blue-600">
             <span>CPU</span>
             <span>Memória</span>
             <span>Rede</span>
@@ -479,25 +487,28 @@ function MonitoramentoTab() {
 
       {/* Status dos Sistemas e Alertas */}
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="border-blue-200">
           <CardHeader>
-            <CardTitle>Status dos Sistemas</CardTitle>
+            <CardTitle className="text-blue-800">Status dos Sistemas</CardTitle>
             <CardDescription>Estado atual de todos os servidores e serviços</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {systemStatus.map((system, index) => (
-                <div key={index} className="flex items-center justify-between p-3 rounded-lg border">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 rounded-lg border border-blue-100 bg-blue-50/30"
+                >
                   <div className="flex items-center gap-3">
                     <div className={`h-3 w-3 rounded-full ${getStatusColor(system.status)}`} />
                     <div>
-                      <p className="font-medium">{system.name}</p>
-                      <p className="text-xs text-muted-foreground">Uptime: {system.uptime}</p>
+                      <p className="font-medium text-blue-800">{system.name}</p>
+                      <p className="text-xs text-blue-600">Uptime: {system.uptime}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium">{system.load}%</p>
-                    <p className="text-xs text-muted-foreground">Load</p>
+                    <p className="text-sm font-medium text-blue-700">{system.load}%</p>
+                    <p className="text-xs text-blue-600">Load</p>
                   </div>
                 </div>
               ))}
@@ -505,28 +516,31 @@ function MonitoramentoTab() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-blue-200">
           <CardHeader>
-            <CardTitle>Alertas Recentes</CardTitle>
+            <CardTitle className="text-blue-800">Alertas Recentes</CardTitle>
             <CardDescription>Últimas notificações e eventos do sistema</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {alerts.map((alert) => (
-                <div key={alert.id} className="flex items-start gap-3 p-3 rounded-lg border">
+                <div
+                  key={alert.id}
+                  className="flex items-start gap-3 p-3 rounded-lg border border-blue-100 bg-blue-50/30"
+                >
                   {getAlertIcon(alert.type)}
                   <div className="flex-1">
-                    <p className="text-sm font-medium">{alert.message}</p>
-                    <p className="text-xs text-muted-foreground">{alert.time}</p>
+                    <p className="text-sm font-medium text-blue-800">{alert.message}</p>
+                    <p className="text-xs text-blue-600">{alert.time}</p>
                   </div>
                   <Badge
                     variant="outline"
                     className={
                       alert.severity === "high"
-                        ? "border-red-200 text-red-700"
+                        ? "border-red-200 text-red-700 bg-red-50"
                         : alert.severity === "medium"
-                          ? "border-amber-200 text-amber-700"
-                          : "border-blue-200 text-blue-700"
+                          ? "border-amber-200 text-amber-700 bg-amber-50"
+                          : "border-blue-200 text-blue-700 bg-blue-50"
                     }
                   >
                     {alert.severity === "high" ? "Alto" : alert.severity === "medium" ? "Médio" : "Baixo"}
@@ -536,32 +550,32 @@ function MonitoramentoTab() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full border-blue-200 text-blue-600 hover:bg-blue-50">
               Ver todos os alertas
             </Button>
           </CardFooter>
         </Card>
       </div>
 
-      {/* Estatísticas de Rede */}
-      <Card>
+      {/* Estatísticas de Rede com paleta azul */}
+      <Card className="border-blue-200">
         <CardHeader>
-          <CardTitle>Estatísticas de Rede</CardTitle>
+          <CardTitle className="text-blue-800">Estatísticas de Rede</CardTitle>
           <CardDescription>Tráfego e performance da rede nas últimas 24 horas</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="text-center p-4 rounded-lg bg-muted/50">
+            <div className="text-center p-4 rounded-lg bg-blue-50 border border-blue-100">
               <p className="text-2xl font-bold text-blue-600">1.2 TB</p>
-              <p className="text-sm text-muted-foreground">Dados Transferidos</p>
+              <p className="text-sm text-blue-700">Dados Transferidos</p>
             </div>
-            <div className="text-center p-4 rounded-lg bg-muted/50">
-              <p className="text-2xl font-bold text-blue-500">45 ms</p>
-              <p className="text-sm text-muted-foreground">Latência Média</p>
+            <div className="text-center p-4 rounded-lg bg-blue-50 border border-blue-100">
+              <p className="text-2xl font-bold text-blue-600">45 ms</p>
+              <p className="text-sm text-blue-700">Latência Média</p>
             </div>
-            <div className="text-center p-4 rounded-lg bg-muted/50">
-              <p className="text-2xl font-bold text-blue-700">99.2%</p>
-              <p className="text-sm text-muted-foreground">Disponibilidade</p>
+            <div className="text-center p-4 rounded-lg bg-blue-50 border border-blue-100">
+              <p className="text-2xl font-bold text-blue-600">99.2%</p>
+              <p className="text-sm text-blue-700">Disponibilidade</p>
             </div>
           </div>
         </CardContent>
@@ -573,14 +587,14 @@ function MonitoramentoTab() {
 // Componente placeholder para Usuários
 function UsuariosTab() {
   return (
-    <Card>
+    <Card className="border-blue-200">
       <CardHeader>
-        <CardTitle>Gerenciamento de Usuários - ET & WICCA</CardTitle>
+        <CardTitle className="text-blue-800">Gerenciamento de Usuários - ET & WICCA</CardTitle>
         <CardDescription>Gerencie usuários, permissões e acessos do sistema.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="text-center py-8">
-          <div className="text-muted-foreground">
+          <div className="text-blue-600">
             <p>Seção de usuários em desenvolvimento.</p>
             <p className="text-sm mt-2">Em breve: criação, edição e gerenciamento de usuários e permissões.</p>
           </div>
@@ -593,14 +607,14 @@ function UsuariosTab() {
 // Componente placeholder para Configurações
 function ConfiguracoesTab() {
   return (
-    <Card>
+    <Card className="border-blue-200">
       <CardHeader>
-        <CardTitle>Configurações do Sistema - ET & WICCA</CardTitle>
+        <CardTitle className="text-blue-800">Configurações do Sistema - ET & WICCA</CardTitle>
         <CardDescription>Configure parâmetros gerais do sistema e preferências.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="text-center py-8">
-          <div className="text-muted-foreground">
+          <div className="text-blue-600">
             <p>Seção de configurações em desenvolvimento.</p>
             <p className="text-sm mt-2">Em breve: configurações de sistema, backup, notificações e integrações.</p>
           </div>
