@@ -14,6 +14,7 @@ import {
 import { Building2, LogOut, Settings, User } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
+import { NotificationCenter } from "@/components/notifications/notification-center"
 
 interface DashboardHeaderProps {
   heading: string
@@ -54,6 +55,7 @@ export function DashboardHeader({ heading, subheading, children }: DashboardHead
 
       <div className="flex items-center gap-4">
         {children}
+        <NotificationCenter />
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
