@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,33 +16,6 @@ import {
   TrendingUp,
   DollarSign,
 } from "lucide-react"
-
-const data = [
-  {
-    name: "Jan",
-    total: 12,
-  },
-  {
-    name: "Fev",
-    total: 15,
-  },
-  {
-    name: "Mar",
-    total: 18,
-  },
-  {
-    name: "Abr",
-    total: 14,
-  },
-  {
-    name: "Mai",
-    total: 22,
-  },
-  {
-    name: "Jun",
-    total: 26,
-  },
-]
 
 export function Overview() {
   const [user, setUser] = useState(null)
@@ -149,6 +121,35 @@ export function Overview() {
     </>
   )
 
+  // Gráfico simples usando CSS
+  const SimpleChart = () => {
+    const data = [
+      { name: "Jan", value: 12 },
+      { name: "Fev", value: 15 },
+      { name: "Mar", value: 18 },
+      { name: "Abr", value: 14 },
+      { name: "Mai", value: 22 },
+      { name: "Jun", value: 26 },
+    ]
+
+    const maxValue = Math.max(...data.map((d) => d.value))
+
+    return (
+      <div className="h-64 flex items-end justify-between gap-2 p-4">
+        {data.map((item, index) => (
+          <div key={index} className="flex flex-col items-center gap-2 flex-1">
+            <div
+              className="bg-blue-500 rounded-t w-full min-h-[20px] transition-all duration-300 hover:bg-blue-600"
+              style={{ height: `${(item.value / maxValue) * 200}px` }}
+            />
+            <span className="text-xs text-muted-foreground">{item.name}</span>
+            <span className="text-xs font-medium">{user.role === "gestor" ? `R$ ${item.value}K` : item.value}</span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {user.role === "gestor" ? <ManagerCards /> : <TechnicalCards />}
@@ -164,20 +165,8 @@ export function Overview() {
               : "Número de novos equipamentos adquiridos nos últimos 6 meses."}
           </CardDescription>
         </CardHeader>
-        <CardContent className="pl-2">
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={data}>
-              <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis
-                stroke="#888888"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => (user.role === "gestor" ? `R$ ${value}K` : `${value}`)}
-              />
-              <Bar dataKey="total" fill="#adfa1d" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+        <CardContent>
+          <SimpleChart />
         </CardContent>
       </Card>
 
@@ -197,7 +186,7 @@ export function Overview() {
           {user.role === "gestor" ? (
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <CheckCircle className="h-5 w-5 text-green-500" />
+                <CheckCircle className="h-5 w-5 text-blue-500" />
                 <div className="flex-1 space-y-1">
                   <p className="text-sm font-medium leading-none">Todos os sistemas operacionais</p>
                   <p className="text-sm text-muted-foreground">99.2% de disponibilidade no mês</p>
@@ -232,7 +221,7 @@ export function Overview() {
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <CheckCircle className="h-5 w-5 text-green-500" />
+                <CheckCircle className="h-5 w-5 text-blue-500" />
                 <div className="flex-1 space-y-1">
                   <p className="text-sm font-medium leading-none">Backup completo do servidor de arquivos</p>
                   <p className="text-sm text-muted-foreground">Backup concluído com sucesso em 45 minutos</p>
@@ -281,7 +270,7 @@ export function Overview() {
           {user.role === "gestor" ? (
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col items-center justify-center gap-1 rounded-lg border p-3">
-                <TrendingUp className="h-8 w-8 text-green-500" />
+                <TrendingUp className="h-8 w-8 text-blue-500" />
                 <h3 className="text-xl font-bold">99.2%</h3>
                 <p className="text-xs text-muted-foreground">Disponibilidade</p>
               </div>
@@ -291,12 +280,12 @@ export function Overview() {
                 <p className="text-xs text-muted-foreground">Custo Mensal</p>
               </div>
               <div className="flex flex-col items-center justify-center gap-1 rounded-lg border p-3">
-                <CheckCircle className="h-8 w-8 text-green-500" />
+                <CheckCircle className="h-8 w-8 text-blue-500" />
                 <h3 className="text-xl font-bold">98%</h3>
                 <p className="text-xs text-muted-foreground">Incidentes Resolvidos</p>
               </div>
               <div className="flex flex-col items-center justify-center gap-1 rounded-lg border p-3">
-                <Building2 className="h-8 w-8 text-primary" />
+                <Building2 className="h-8 w-8 text-blue-600" />
                 <h3 className="text-xl font-bold">4.7/5</h3>
                 <p className="text-xs text-muted-foreground">Satisfação</p>
               </div>
@@ -304,22 +293,22 @@ export function Overview() {
           ) : (
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col items-center justify-center gap-1 rounded-lg border p-3">
-                <Laptop className="h-8 w-8 text-primary" />
+                <Laptop className="h-8 w-8 text-blue-600" />
                 <h3 className="text-xl font-bold">68</h3>
                 <p className="text-xs text-muted-foreground">Desktops/Laptops</p>
               </div>
               <div className="flex flex-col items-center justify-center gap-1 rounded-lg border p-3">
-                <Server className="h-8 w-8 text-primary" />
+                <Server className="h-8 w-8 text-blue-600" />
                 <h3 className="text-xl font-bold">12</h3>
                 <p className="text-xs text-muted-foreground">Servidores</p>
               </div>
               <div className="flex flex-col items-center justify-center gap-1 rounded-lg border p-3">
-                <Smartphone className="h-8 w-8 text-primary" />
+                <Smartphone className="h-8 w-8 text-blue-600" />
                 <h3 className="text-xl font-bold">35</h3>
                 <p className="text-xs text-muted-foreground">Dispositivos Móveis</p>
               </div>
               <div className="flex flex-col items-center justify-center gap-1 rounded-lg border p-3">
-                <Building2 className="h-8 w-8 text-primary" />
+                <Building2 className="h-8 w-8 text-blue-600" />
                 <h3 className="text-xl font-bold">12</h3>
                 <p className="text-xs text-muted-foreground">Outros</p>
               </div>
