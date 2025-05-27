@@ -26,6 +26,7 @@ import {
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { AlertSystem } from "@/components/notifications/alert-system"
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null)
@@ -103,6 +104,11 @@ export default function DashboardPage() {
       case "configuracoes":
         if (user.role === "admin") {
           return <ConfiguracoesTab />
+        }
+        return <AccessDenied />
+      case "alertas":
+        if (user.role === "admin" || user.role === "ti") {
+          return <AlertSystem />
         }
         return <AccessDenied />
       default:
