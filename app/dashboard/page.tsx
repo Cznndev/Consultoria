@@ -282,7 +282,7 @@ function MonitoramentoTab() {
   const getStatusColor = (status) => {
     switch (status) {
       case "online":
-        return "bg-green-500"
+        return "bg-blue-500"
       case "warning":
         return "bg-amber-500"
       case "offline":
@@ -320,7 +320,7 @@ function MonitoramentoTab() {
               <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 ${
-                    metrics.cpu > 80 ? "bg-red-500" : metrics.cpu > 60 ? "bg-amber-500" : "bg-green-500"
+                    metrics.cpu > 80 ? "bg-blue-800" : metrics.cpu > 60 ? "bg-blue-600" : "bg-blue-400"
                   }`}
                   style={{ width: `${metrics.cpu}%` }}
                 />
@@ -343,7 +343,7 @@ function MonitoramentoTab() {
               <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 ${
-                    metrics.memory > 85 ? "bg-red-500" : metrics.memory > 70 ? "bg-amber-500" : "bg-blue-500"
+                    metrics.memory > 85 ? "bg-blue-800" : metrics.memory > 70 ? "bg-blue-600" : "bg-blue-400"
                   }`}
                   style={{ width: `${metrics.memory}%` }}
                 />
@@ -364,7 +364,7 @@ function MonitoramentoTab() {
               <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 ${
-                    metrics.disk > 90 ? "bg-red-500" : metrics.disk > 75 ? "bg-amber-500" : "bg-purple-500"
+                    metrics.disk > 90 ? "bg-blue-800" : metrics.disk > 75 ? "bg-blue-600" : "bg-blue-400"
                   }`}
                   style={{ width: `${metrics.disk}%` }}
                 />
@@ -384,7 +384,7 @@ function MonitoramentoTab() {
             <div className="mt-2">
               <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                 <div
-                  className="h-full bg-green-500 transition-all duration-500"
+                  className={`h-full transition-all duration-500 bg-blue-400`}
                   style={{ width: `${metrics.network}%` }}
                 />
               </div>
@@ -403,9 +403,9 @@ function MonitoramentoTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">Uptime</p>
-                <p className="text-2xl font-bold text-green-600">{metrics.uptime}</p>
+                <p className="text-2xl font-bold text-blue-600">{metrics.uptime}</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-green-500" />
+              <TrendingUp className="h-8 w-8 text-blue-500" />
             </div>
           </CardContent>
         </Card>
@@ -415,7 +415,7 @@ function MonitoramentoTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">Usuários Ativos</p>
-                <p className="text-2xl font-bold text-blue-600">{metrics.activeUsers}</p>
+                <p className="text-2xl font-bold text-blue-500">{metrics.activeUsers}</p>
               </div>
               <Users className="h-8 w-8 text-blue-500" />
             </div>
@@ -427,7 +427,7 @@ function MonitoramentoTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">Load Average</p>
-                <p className="text-2xl font-bold text-purple-600">{metrics.systemLoad.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-blue-700">{metrics.systemLoad.toFixed(2)}</p>
               </div>
               <BarChart3 className="h-8 w-8 text-purple-500" />
             </div>
@@ -439,7 +439,7 @@ function MonitoramentoTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">Temperatura</p>
-                <p className="text-2xl font-bold text-orange-600">{metrics.temperature.toFixed(0)}°C</p>
+                <p className="text-2xl font-bold text-blue-800">{metrics.temperature.toFixed(0)}°C</p>
               </div>
               <Thermometer className="h-8 w-8 text-orange-500" />
             </div>
@@ -459,7 +459,7 @@ function MonitoramentoTab() {
               {Array.from({ length: 50 }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-primary rounded-t transition-all duration-300"
+                  className="bg-blue-600 rounded-t transition-all duration-300"
                   style={{
                     height: `${Math.max(10, Math.random() * 100)}%`,
                     width: "2%",
@@ -552,15 +552,15 @@ function MonitoramentoTab() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <div className="text-center p-4 rounded-lg bg-muted/50">
-              <p className="text-2xl font-bold text-green-600">1.2 TB</p>
+              <p className="text-2xl font-bold text-blue-600">1.2 TB</p>
               <p className="text-sm text-muted-foreground">Dados Transferidos</p>
             </div>
             <div className="text-center p-4 rounded-lg bg-muted/50">
-              <p className="text-2xl font-bold text-blue-600">45 ms</p>
+              <p className="text-2xl font-bold text-blue-500">45 ms</p>
               <p className="text-sm text-muted-foreground">Latência Média</p>
             </div>
             <div className="text-center p-4 rounded-lg bg-muted/50">
-              <p className="text-2xl font-bold text-purple-600">99.2%</p>
+              <p className="text-2xl font-bold text-blue-700">99.2%</p>
               <p className="text-sm text-muted-foreground">Disponibilidade</p>
             </div>
           </div>
